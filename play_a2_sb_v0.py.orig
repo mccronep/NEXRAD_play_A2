@@ -1,0 +1,163 @@
+#!/usr/bin/python3
+
+### ------------------------------------------------------------------------------------------------------
+### PYTHON 3 VERSION
+### ====== = =======
+###
+### 
+### Converted to Python 3 by Paul McCrone paul.mccrone@noaa.gov - ROC/FRB - 09/2023 
+###                          This adds subprocess to run play_a2. Changes how we run play_a2.
+###                          THIS IS NOT THE ORIGINAL PLAY_A2.
+### ------------------------------------------------------------------------------------------------------
+
+DADASHES="- - - - - - - - - - - - - - - - - - - - - - -"
+
+
+# Import the needed libraries.
+#from Tkinter import Tk
+try:
+    # Python version 3.X:
+    from tkinter import Tk
+except: 
+    print("Error with import 1")
+
+try:
+    import sys
+    import os
+    import subprocess as sp
+    #import tkFileDialog as tkf    #####----- tkFileDialog was only in python 2 . Python 3 uses filedialog
+    from tkinter import filedialog as tkf
+except: 
+    print("Error with import 2")
+
+# Set constants / adaptable parameters.
+n_args = 1
+user_spec = 'orpg'
+cfg_dirSpec = 'cfg'
+commsl_fileSpec = 'comms_link.conf'
+tcp_fileSpec = 'tcp.conf'
+rad_site_fileSpec = 'site_info.dea'
+commsl_lineSpec = 'cm_tcp'
+tcp_port_lineSpec = 'rpga1'
+site_id_lineSpec = 'rpg_name'
+core_nbtcp_dirSpec = '/src/cpc102/tsk060'
+override_cmd_dir = '/import/apps/scastleberry/Scripts/RPG/cpc102.tsk060'
+override_cmd_msg_fnames = ['awips_rps.msg','rpccds_rps.msg']
+override_cmd_spec = override_cmd_dir + '/nbtcp'
+default_cmd_spec = 'nbtcp'
+
+# Ensure the user is actually logged into an ORPG account.
+user_obj = sp.Popen('whoami',stdout=sp.PIPE)
+user = user_obj.stdout.read()
+#user = user.strip(b'\n')    ### P.McCrone commneted this out. 9/13/2023
+
+user = 'orpg2'
+user = os.environ.get("USER")
+
+
+if user_spec not in user:
+        print("\n")
+        print("ERROR: Not logged in to a valid ORPG account.\n")
+        print("Current user is: "+ user+ "\n")
+        print("Program execution terminated!\n")
+        sys.exit()
+# Get the home ORPG# directory.
+home_dir = os.environ['HOME']
+
+# Get the ORPG number.
+user_arr = user.split(user_spec)
+orpg_num = user_arr[1]
+
+# Verification print statements.
+print("\n")
+print("The current ORPG account is: ORPG"+ orpg_num+ "\n")
+
+
+print(DADASHES+"\nStarting Play_A2 .\n")
+
+
+#######################
+#    play_a2 -i
+#    5\n
+#    1\n
+#    2.0\n
+#    2\n
+#    20000\n
+#    10\n
+#    4\n
+#######################
+
+
+### Changes here for nbtcp.
+dashp='-p'
+dasha='-A'
+dashs='-s'
+dashd='-d'
+
+dashi='-i'
+
+rpgaa='rpga1'
+
+cmd_spec='play_a2'
+#cmd_spec='/export/home/orpg2/bin/lnux_x86/play_a2'
+option1 ='5'      # Options
+option2 ='1'      # Select new speed
+speed   ='2.0'    # 2X speed
+option4 ='2'      # Max volume time gap
+timegap ='20000'  # Sec
+returnm ='10'     # Return to main menu
+startpl ='4'      # start playback now
+
+#print("\nBegin Run\n")
+#print("We are running "+str())
+
+popen_list=[cmd_spec, dashi]
+
+
+rpsfile='qpetest_rps_list.ISDP_B22.dat'
+creturn='\n'
+
+print("\nBegin Run\n")
+print(DADASHES)
+print(creturn)
+
+print("We are running: "+str(cmd_spec)+creturn)
+print("Enter options area of program,  Option : "+str(option1)+creturn)
+print("Enter option to enter new speed,Option : "+str(option2)+creturn)
+print("Enter the new speed value:      Value  : "+str(speed)+creturn)
+print("Enter option of max time gap:   Option : "+str(option4)+creturn)
+print("Enter value of max time gap:    Value  : "+str(timegap)+creturn)
+print("Return to main menu:            Option : "+str(returnm)+creturn)
+print("Start Playback:                 Option : "+str(startpl)+creturn)
+print(DADASHES)
+print(creturn)
+
+print(DADASHES)
+print(creturn)
+
+
+myinput = option1+creturn+option2+creturn+speed+creturn+option4+creturn+timegap+creturn+returnm+creturn+startpl+creturn
+
+print("My input is:"+str(myinput))
+
+mbytesvalue=myinput.encode('utf-8')
+
+print("The bytes value of myinput is:")
+print(mbytesvalue)
+print(DADASHES)
+print(creturn)
+
+p=sp.Popen(popen_list,stdout=sp.PIPE, stdin=sp.PIPE,stderr=sp.STDOUT)
+p.stdin.write(mbytesvalue)
+
+psstdout = p.communicate()[0].decode('utf-8')
+print('')
+
+#:
+
+
+print("\n")
+
+print("Program Execution Complete. Ensure the hci is running!\n")
+sys.exit()
+
